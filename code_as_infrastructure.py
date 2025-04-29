@@ -92,6 +92,13 @@ web_instance = aws.ec2.Instance("web-instance",
         "Name": "web-server",
     })
 
+# Output the Public IP of the EC2 Instance
+pulumi.export("public_ip", web_instance.public_ip)
+pulumi.export("public_dns", web_instance.public_dns)
+pulumi.export("vpc_id", vpc.id)
+pulumi.export("subnet_id", public_subnet.id)
+pulumi.export("security_group_id", web_sg.id)
+
 
 
 
