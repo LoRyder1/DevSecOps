@@ -76,7 +76,21 @@ web_sg = aws.ec2.SecurityGroup("web-sg",
           "Name": "web-sg",
       })
 
-
+#7. Create an EC2 Instance
+web_instance = aws.ec2.Instance("web-instance", 
+    ami="ami-xxxxxxxxxxxxxx", # Replace with a valid AWS AMI ID for your region
+    instance_type="t2.micro",
+    subnet_id=public_subnet.id,
+    vpc_security_group_ids=[web_sg.id],
+    user_data="""#!/bin/bash
+    sudo apt update
+    sudo apt install -y apache2
+    sudo systemctl start apache2
+    echo '<h1>Hello from Pulumi!</h>' | sudo tee /var/www/html/index.html
+    """,
+    tags={
+        "Name": "web-server",
+    })
 
 
 
