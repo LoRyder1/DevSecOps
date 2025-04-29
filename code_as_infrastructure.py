@@ -99,7 +99,22 @@ pulumi.export("vpc_id", vpc.id)
 pulumi.export("subnet_id", public_subnet.id)
 pulumi.export("security_group_id", web_sg.id)
 
+# Pulumi is an open source infrastructure as code tools to manage cloud infrastructure
+# the whole idea is to avoid configuration using web console for vms, databases, networks e
+# instead write code to define desired infrastructure state, code is then auto provisioned and managed
 
+# COde above provisions the following:
+# VPC - virtual private cloud, logically isolated section of the AWS cloud to launch AWS resources 
+# in a virtual network that you define
+# internet gateway: a gateway that allows instances in VPC to communicate with the internet
+
+# public subnet, public route table, route table association
+# security group - acts as a virtual firewall for EC2 instance
+
+# EC2 instance
+# ami - amazon machine image
+# instance_type - hardware configuration
+# user_data - script that is executed when the instance is launched
 
 
 
