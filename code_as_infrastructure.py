@@ -47,3 +47,14 @@ public_route_table = aws.ec2.RouteTable("public-route-table",
 public_route_table_association = aws.ec2.RoutTableAssociation("public-subnet-a-association", 
     subnet_id=public_subnet.id,
     route_table_id=public_route_table.id)
+
+#6. Create a Security Group for the EC2 Instance
+web_sg = aws.ec2.SecurityGroup("web-sg", 
+    vpc_id=vpc.id,
+    description="Allow HTTP and SSH",
+    ingress=[
+      aws.ec2.SecurityGroupIngressArgs(
+          protocol="tcp",
+          from_port=80,
+          to_port=80,
+          cidr_blocks=["0.0.0.0/0"])])
