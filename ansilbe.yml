@@ -1,0 +1,54 @@
+---
+- name: Install and Configure Apache Web Server
+  hosts: webservers # Target group of hosts defined in your Ansible inventory
+  become: true    # Run tasks with elevated privileges (sudo)
+  vars:
+    http_port: 80
+    max_clients: 200
+
+  tasks:
+    - name: Ensure Apache is installed
+      ansible.builtin.package:
+        name: httpd
+        state: present
+      notify: Start Apache service # Trigger a handler
+
+    - name: Configure Apache main configuration file
+      ansible.builtin.template:
+        src: templates/httpd.conf.j2
+        dest: /etc/httpd/conf/httpd.conf
+      notify: Restart Apache service
+
+    - name: Set the maximum number of clients
+      ansible.builtin.lineinfile:
+        path: /etc/httpd/conf/httpd.conf
+        regexp: '^<IfModule mpm_prefork_module>$'
+        insertafter: '^<IfModule mpm_prefork_module>$'
+        line: "  StartServers       2"
+        state: present
+      notify: Restart Apache service
+
+    - name: Open HTTP port in the firewall (if firewalld is active)
+      ansible.builtin.firewalld:
+        port: "{{ http_port }}/tcp"
+        permanent: true
+        state: enabled
+      when: ansible_service_mgr == 'systemd' # Check if the system uses systemd
+
+    - name: Apply firewall rules
+      ansible.builtin.command:
+        cmd: firewall-cmd --reload
+      when: ansible_service_mgr == 'systemd'
+      listen: Reload Firewall # Handler can listen to other handlers
+
+  handlers:
+    - name: Start Apache service
+      ansible.builtin.service:
+        name: httpd
+        state: started
+        enabled: true
+
+    - name: Restart Apache service
+      ansible.builtin.service:
+        name: httpd
+        state: restarted
